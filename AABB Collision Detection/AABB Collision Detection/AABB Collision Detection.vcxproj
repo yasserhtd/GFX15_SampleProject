@@ -83,8 +83,10 @@
     <ClCompile Include="CollisionDetection\CollidableModel.cpp" />
     <ClCompile Include="CollisionDetection\CollisionManager.cpp" />
     <ClCompile Include="EulerCamera\EulerCamera.cpp" />
+    <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsDevice\KeyFrameAnimationShader.cpp" />
     <ClCompile Include="GraphicsDevice\ShaderProgram.cpp" />
+    <ClCompile Include="Hero.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MD2Model\md2model.cpp" />
     <ClCompile Include="MD2Model\vertexBufferObject.cpp" />
@@ -96,6 +98,7 @@
     <ClCompile Include="Shaders\shader.cpp" />
     <ClCompile Include="Texture\Texture Loader\stb_image.c" />
     <ClCompile Include="Texture\texture.cpp" />
+    <ClCompile Include="Third Person Camera\ThirdPersonCamera.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="TextureLighting.fragmentshader" />
@@ -108,8 +111,10 @@
     <ClInclude Include="CollisionDetection\CollidableModel.h" />
     <ClInclude Include="CollisionDetection\CollisionManager.h" />
     <ClInclude Include="EulerCamera\EulerCamera.h" />
+    <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsDevice\KeyFrameAnimationShader.h" />
     <ClInclude Include="GraphicsDevice\ShaderProgram.h" />
+    <ClInclude Include="Hero.h" />
     <ClInclude Include="MD2Model\md2model.h" />
     <ClInclude Include="MD2Model\vertexBufferObject.h" />
     <ClInclude Include="Model\Model.h" />
@@ -120,6 +125,7 @@
     <ClInclude Include="Shaders\shader.hpp" />
     <ClInclude Include="Texture\Texture Loader\stb_image.h" />
     <ClInclude Include="Texture\texture.h" />
+    <ClInclude Include="Third Person Camera\ThirdPersonCamera.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

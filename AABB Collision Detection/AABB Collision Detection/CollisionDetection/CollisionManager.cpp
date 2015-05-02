@@ -18,8 +18,8 @@ void CollisionManager::UpdateCollisions()
 		{
 			if (collidableModels[i]->GetBoundingBox().IsIntersecting(collidableModels[j]->GetBoundingBox()))
 			{
-				collidableModels[i]->Collided();
-				collidableModels[j]->Collided();
+				collidableModels[i]->Collided(collidableModels[j]->objectType);
+				collidableModels[j]->Collided(collidableModels[i]->objectType);
 			}
 		}
 	}

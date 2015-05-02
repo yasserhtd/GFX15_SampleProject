@@ -44,7 +44,7 @@ AABoundingBox CollidableModel::CalculateBoundingBox(std::vector<glm::vec3> verti
 	return box;
 }
 
-void CollidableModel::Collided()
+void CollidableModel::Collided(ObjectType fObjectType)
 {
 	//we just want to display the address of the collided object to make sure that collision happened for each object.
 	printf("I've collided! my address is %p \n", static_cast<void const *>(this));

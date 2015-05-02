@@ -17,6 +17,7 @@
 #include "GraphicsDevice/KeyFrameAnimationShader.h"
 #include "MD2Model/md2model.h"
 #include "CollisionDetection/CollisionManager.h"
+#include "Hero.h"
 
 class Renderer
 {
@@ -29,8 +30,7 @@ class Renderer
 	GLuint LightPositionID;
 	GLuint EyePositionID;
 
-	CMD2Model blade;
-	animState_t bladeAnimationState;
+
 
 	std::unique_ptr<Model> floor;
 	std::unique_ptr<Texture> floorTexture;
@@ -39,16 +39,16 @@ class Renderer
 	std::unique_ptr<Model3D> house;
 	glm::mat4 houseM;
 
-	std::unique_ptr<EulerCamera> myCamera;
 
 	glm::mat4 floorM;
 	glm::mat4 spiderM;
-	glm::mat4 bladeM;
+
 	glm::vec3 ambientLight;
 	glm::vec3 lightPosition;
 
 	std::unique_ptr<CollisionManager> collisionManager;
 
+	std::unique_ptr<Hero> hero;
 public:
     Renderer();
     ~Renderer();

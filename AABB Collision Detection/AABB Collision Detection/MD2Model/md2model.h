@@ -146,6 +146,8 @@ typedef unsigned char BYTE;
 class CMD2Model : public CollidableModel
 {
 public:
+	CMD2Model();
+	virtual void Collided(ObjectType fObjectType);
 	void LoadModel(char* sFilename, bool flipUVCoords = false);
 
 	void RenderModel(animState_t* animState,KeyFrameAnimationShader* shader);
@@ -156,11 +158,12 @@ public:
 	void StopAnimation();
 	vector<glm::vec3> GetVertices();
 	static anim_t	animlist[21];
+
+	bool IsAnimationFinished;
 private:
 	UINT uiModelVAO;
-	
 	vector<UINT> uiFramesBuffer;
-
+	bool isanimrep;
 	md2_t header;
 	
 	vector< vector<glm::vec3> > vVertices; // Vertices extracted for every frame

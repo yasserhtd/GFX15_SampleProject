@@ -46,6 +46,9 @@
     <Filter Include="CollisionDetection">
       <UniqueIdentifier>{f7e6e037-9e57-49be-99f2-38553d19a304}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Third Person Camera">
+      <UniqueIdentifier>{b281f4b8-a5ee-4e2d-b91c-2dc44bdcb251}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -101,6 +104,15 @@
     </ClCompile>
     <ClCompile Include="CollisionDetection\AABoundingBox.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="GameObject.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Hero.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Third Person Camera\ThirdPersonCamera.cpp">
+      <Filter>Third Person Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -165,6 +177,15 @@
     </ClInclude>
     <ClInclude Include="CollisionDetection\CollisionManager.h">
       <Filter>CollisionDetection</Filter>
+    </ClInclude>
+    <ClInclude Include="GameObject.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Hero.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Third Person Camera\ThirdPersonCamera.h">
+      <Filter>Third Person Camera</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

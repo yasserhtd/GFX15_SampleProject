@@ -33,6 +33,7 @@ class Model3D : public CollidableModel
 public:
 	Model3D();
 	~Model3D();
+	virtual void Collided(ObjectType fObjectType);
 	bool LoadFromFile(std::string modelFileName, bool flipUVs = true);
 	std::vector<glm::vec3> GetVertices();
 	void Initialize();

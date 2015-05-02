@@ -456,6 +456,8 @@ animState_t CMD2Model::StartAnimation(animType_t type)
 
 	res.interpol = 0.0f;
 
+	IsAnimationFinished = false;
+	isanimrep = false;
 	return res;
 }
 
@@ -483,7 +485,12 @@ void CMD2Model::UpdateAnimation(animState_t* animState, float fTimePassed)
 		animState->curr_frame = animState->next_frame;
 		animState->next_frame++;
 		if(animState->next_frame > animState->endframe)
+		{
 			animState->next_frame = animState->startframe;
+			IsAnimationFinished = true;
+		}
+		
+		
 	}
 
 	animState->interpol = float(animState->fps) * (animState->curr_time - animState->old_time);
@@ -492,4 +499,22 @@ void CMD2Model::UpdateAnimation(animState_t* animState, float fTimePassed)
 vector<glm::vec3> CMD2Model::GetVertices()
 {
 	return vVertices[0];
+}
+
+void CMD2Model::Collided(ObjectType fObjectType)
+{
+	if (fObjectType == ObjectType::MD2Model)
+	{
+
+	}
+	else if(fObjectType == ObjectType::Model3D)
+	{
+		printf("I'm an MD2 Model and I've collided! with model3d \n");
+	}
+}
+
+CMD2Model::CMD2Model()
+{
+	objectType = ObjectType::MD2Model;
+	IsAnimationFinished = true;
 }

@@ -17,7 +17,6 @@ Renderer::~Renderer()
 void Renderer::Initialize()
 {
 	//myCamera = std::unique_ptr<FPCamera>(new FPCamera());
-	myCamera = std::unique_ptr<EulerCamera>(new EulerCamera());
 	collisionManager = std::unique_ptr<CollisionManager>( new CollisionManager());
 	//////////////////////////////////////////////////////////////////////////
 	//drawing a square.
@@ -51,14 +50,6 @@ void Renderer::Initialize()
 	floorTexture = std::unique_ptr<Texture>(new Texture("data/textures/rock.jpg",0));
 	//////////////////////////////////////////////////////////////////////////
 
-	//////////////////////////////////////////////////////////////////////////
-	blade.LoadModel("data/models/blade/Blade.md2");
-	//blade.LoadModel("data/models/samourai/Samourai.md2");
-	bladeAnimationState = blade.StartAnimation(animType_t::STAND);
-	//calculate AABB
-	blade.SetBoundingBox(CollidableModel::CalculateBoundingBox(blade.GetVertices()));
-	collisionManager->AddCollidableModel((CollidableModel*) &blade);
-	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	//load model.
@@ -87,16 +78,11 @@ void Renderer::Initialize()
 	staticModelShader.LoadProgram();
 	//////////////////////////////////////////////////////////////////////////
 
+	hero = std::unique_ptr<Hero>(new Hero(&animatedModelShader));
 
-	//////////////////////////////////////////////////////////////////////////
-	// Projection matrix : 
-	myCamera->SetPerspectiveProjection(45.0f,4.0f/3.0f,0.1f,100.0f);
+	collisionManager->AddCollidableModel((CollidableModel*)hero.get());
+	
 
-	// View matrix : 
-	myCamera->Reset(0.0,1.0,2.0,
-					0,0,0,
-					0,1,0);
-	//////////////////////////////////////////////////////////////////////////
 
 	//////////////////////////////////////////////////////////////////////////
 	// Configure the light.
@@ -112,7 +98,7 @@ void Renderer::Initialize()
 	//setup the eye position.
 	EyePositionID = glGetUniformLocation(staticModelShader.programID,"EyePosition_worldspace");
 	//send the eye position to the shaders.
-	glUniform3fv(EyePositionID,1, &myCamera->GetEyePosition()[0]);
+	glUniform3fv(EyePositionID,1, &hero->Camera->GetEyePosition()[0]);
 
 	///////////////////////////////////////////////////
 	//repeat the process for the animated models shader.
@@ -127,7 +113,7 @@ void Renderer::Initialize()
 	//setup the eye position.
 	EyePositionID = glGetUniformLocation(animatedModelShader.programID,"EyePosition_worldspace");
 	//send the eye position to the shaders.
-	glUniform3fv(EyePositionID,1, &myCamera->GetEyePosition()[0]);
+	glUniform3fv(EyePositionID,1, &hero->Camera->GetEyePosition()[0]);
 	//////////////////////////////////////////////////////////////////////////
 
 
@@ -141,11 +127,7 @@ void Renderer::Initialize()
 	tempBox.Translate(-1.0f,0.25f,0.0f);
 	mySpider->SetBoundingBox(tempBox);
 	
-	bladeM = glm::rotate(-90.0f,1.0f,0.0f,0.0f) * glm::scale(0.01f,0.01f,0.01f);
-	tempBox = blade.GetBoundingBox();
-	tempBox.Scale(0.01f,0.01f,0.01f);
-	tempBox.Rotate(-90.0f,1.0f,0.0f,0.0f);
-	blade.SetBoundingBox(tempBox);
+
 
 	houseM = glm::rotate(90.0f,1.0f,0.0f,0.0f) *glm::scale(0.1f,0.1f,0.1f);
 	tempBox = house->GetBoundingBox();
@@ -162,7 +144,7 @@ void Renderer::Draw()
 {		
 
 		//Bind the VP matrix (Camera matrices) to the current shader.
-		glm::mat4 VP = myCamera->GetProjectionMatrix() * myCamera->GetViewMatrix();
+		glm::mat4 VP = hero->Camera->GetProjectionMatrix() * hero->Camera->GetViewMatrix();
 
 
 		staticModelShader.UseProgram();
@@ -174,10 +156,9 @@ void Renderer::Draw()
 		mySpider->Render(&staticModelShader,spiderM);
 		house->Render(&staticModelShader,houseM);
 		
-		animatedModelShader.UseProgram();
-		animatedModelShader.BindVPMatrix(&VP[0][0]);
-		animatedModelShader.BindModelMatrix(&bladeM[0][0]);
-		blade.RenderModel(&bladeAnimationState,&animatedModelShader);
+	
+
+		hero->Render(VP);
 }
 
 void Renderer::Cleanup()
@@ -186,14 +167,15 @@ void Renderer::Cleanup()
 
 void Renderer::Update(double deltaTime)
 {
-	blade.UpdateAnimation(&bladeAnimationState,deltaTime/1000);
+	
 	collisionManager->UpdateCollisions();
+	hero->UpdateAnimation(deltaTime/1000);
 }
 
 void Renderer::HandleKeyboardInput(int key)
 {
 	float step = 0.1f;
-	auto tempbox = blade.GetBoundingBox();
+
 
 	//NOTE!!! 
 	//this is the worst way possible for moving an object with the camera.
@@ -204,74 +186,60 @@ void Renderer::HandleKeyboardInput(int key)
 		//Moving forward
 	case GLFW_KEY_UP:
 	case GLFW_KEY_W:
-		myCamera->Walk(step);
-		bladeM = glm::translate(0.0f,0.0f,-step)*bladeM;
-		tempbox.Translate(0.0f,0.0f,-step);
+		hero->Walk(0.05f);
 		break;
 
 		//Moving backword
 	case GLFW_KEY_DOWN:
 	case GLFW_KEY_S:
-		myCamera->Walk(-step);
-		bladeM = glm::translate(0.0f,0.0f,step)*bladeM;
-		tempbox.Translate(0.0f,0.0f,step);
+		hero->Walk(-0.05f);
 		break;
 
 		// Moving right
 	case GLFW_KEY_RIGHT:
 	case GLFW_KEY_D:
-		myCamera->Strafe(step);
-		bladeM = glm::translate(step,0.0f,0.0f)*bladeM;
-		tempbox.Translate(step,0.0f,0.0f);
+		hero->Strafe(0.05f);
 		break;
 
 		// Moving left
 	case GLFW_KEY_LEFT:
 	case GLFW_KEY_A:
-		myCamera->Strafe(-step);
-		bladeM = glm::translate(-step,0.0f,0.0f)*bladeM;
-		tempbox.Translate(-step,0.0f,0.0f);
+		hero->Strafe(-0.05f);
 		break;
 
 		// Moving up
 	case GLFW_KEY_SPACE:
 	case GLFW_KEY_R:
-		myCamera->Fly(step);
-		bladeM = glm::translate(0.0f,step,0.0f)*bladeM;
-		tempbox.Translate(0.0f,step,0.0f);
+		
 		break;
 
 		// Moving down
 	case GLFW_KEY_LEFT_CONTROL:
 	case GLFW_KEY_F:
-		myCamera->Fly(-step);
-		bladeM = glm::translate(0.0f,-step,0.0f)*bladeM;
-		tempbox.Translate(0.0f,-step,0.0f);
+		
 		break;
 	default:
 		break;
 	}
 
-	//Set the transformed bounding box again.
-	blade.SetBoundingBox(tempbox);
+	
 
-	//continue the remaining movements.
-	myCamera->UpdateViewMatrix();
 
 	//update the eye position uniform.
 	staticModelShader.UseProgram();
 	EyePositionID = glGetUniformLocation(staticModelShader.programID,"EyePosition_worldspace");
-	glUniform3fv(EyePositionID,1, &myCamera->GetEyePosition()[0]);
+	glUniform3fv(EyePositionID,1, &hero->Camera->GetEyePosition()[0]);
 
 	animatedModelShader.UseProgram();
 	EyePositionID = glGetUniformLocation(animatedModelShader.programID,"EyePosition_worldspace");
-	glUniform3fv(EyePositionID,1, &myCamera->GetEyePosition()[0]);
+	glUniform3fv(EyePositionID,1, &hero->Camera->GetEyePosition()[0]);
 }
 
 void Renderer::HandleMouse(double deltaX,double deltaY)
 {	
-	myCamera->Yaw(deltaX);
-	myCamera->Pitch(deltaY);
-	myCamera->UpdateViewMatrix();
+	double scaleAngle = 10.0;
+	hero->Camera->Yaw(deltaX*scaleAngle);
+	hero->Camera->Pitch(deltaY*scaleAngle);
+	hero->Camera->UpdateViewMatrix();
 }
 
